@@ -1,0 +1,23 @@
+{
+  "name": "slack-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "begin": "node src/services/mainServer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^3.21.2",
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.2",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "p-limit": "^6.1.0",
+    "sqlite3": "^5.1.7"
+  }
+}
