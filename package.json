@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "begin": "node src/services/mainServer.js"
+    "begin": "node src/services/mainServer.js",
+    "scraping-service": "node src/services/data-scraping/dataScrapingService.js",
+    "embedding-service": "node src/services/embedding/embeddingGenerationService.js",
+    "slack-bot": "node src/services/slack-bot/slackBotService.js"
   },
   "keywords": [],
   "author": "",
