@@ -30,6 +30,11 @@ const slackApp = new App({
     socketMode: true,
 });
 
+/**
+ * Function to return user name from the message being processed
+ * @param {*} message being processed
+ * @returns username or "there" as fallback
+ */
 const getUserInfo = async (message) => {
     return new Promise(async (resolve) => {
         try {
@@ -38,12 +43,14 @@ const getUserInfo = async (message) => {
             resolve(result.user.real_name || result.user.name);
         } catch (error) {
             console.error("Error fetching user info:", error);
-            resolve("there"); // Fallback
+            resolve("there"); // fallback
         }
     });
 };
 
-// Function to process the message queue asynchronously
+/**
+ * Function to process the message queue asynchronously
+ */
 const processMessageQueue = async () => {
     while (messageQueue.length > 0) {
         let messagesToProcess = [...messageQueue];
@@ -51,7 +58,7 @@ const processMessageQueue = async () => {
 
         const processingPromises = messagesToProcess.map(async ({ message, channel, ts }) => {
             try {
-                console.log("Processing message ", message.text);
+                console.log("Processing message: ", message.text);
                 const queryEmbedding = await getEmbeddings(message.text);
                 const retVal = await isSearchQueryPresentInKnowledgeBase(queryEmbedding);
                 let userName = await getUserInfo(message);
@@ -73,6 +80,7 @@ const processMessageQueue = async () => {
                         text: reply,
                         thread_ts: ts
                     });
+                    console.log("Processed message: ", message.text);
                 } else {
                     let issueData = {
                         issueSummary: message.text,
@@ -99,7 +107,7 @@ const processMessageQueue = async () => {
 // Slack messages event listener
 slackApp.message(async ({ message }) => {
     if (message.channel === targetChannelId && !message.bot_id && message.text && message.text !== "") {
-        console.log("message PUSHED ", message.text);
+        console.log("Pushed message: ", message.text);
         messageQueue.push({
             message: message,
             channel: message.channel,
@@ -112,13 +120,14 @@ slackApp.message(async ({ message }) => {
     }
 });
 
-// Endpoint to notify Slack bot when embedding is complete
+// Endpoint to notify Slack bot when knowledgebase is ready to be used
 app.post('/notify', (req, res) => {
     canProcessQueries = true;  // Allow query processing
     processMessageQueue();  // Start processing the queued queries
     res.status(200).send('Slack bot query processing started');
 });
 
+// starts the slack app
 const startSlackApp = async () => {
     canProcessQueries = false;
     await slackApp.start();

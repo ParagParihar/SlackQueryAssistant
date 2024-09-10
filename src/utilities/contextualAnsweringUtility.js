@@ -6,10 +6,18 @@ const axios = require('axios');
 const { OPENAI_CHAT_COMPLETIONS_API,
     OPENAI_CHAT_COMPLETIONS_MODEL,
     OPENAI_CHAT_COMPLETIONS_MODEL_ROLE,
-    OPENAI_CHAT_COMPLETIONS_CONTEXT } = require("../config/const");
+    OPENAI_CHAT_COMPLETIONS_CONTEXT,
+    CHAT_COMPLETIONS_MAX_TOKEN,
+    CHAT_COMPLETIONS_TEMPERATURE } = require("../config/const");
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+/**
+ * Utility fubction to get contextual answer to a question
+ * @param question to be answered 
+ * @param {*} context using which question must be answered
+ * @returns the answer based on contect
+ */
 const getAnswerFromContext = async (question, context) => {
     const url = OPENAI_CHAT_COMPLETIONS_API;
 
@@ -24,9 +32,8 @@ const getAnswerFromContext = async (question, context) => {
         model: OPENAI_CHAT_COMPLETIONS_MODEL,
         messages: [
             {
-                //`You are a helpful assistant. Based on the context below, answer this specific query directly: ${question} .You should always aim to be concise, helpful, and friendly in your responses. Do not ask follow-up questions or request more details.`
                 role: OPENAI_CHAT_COMPLETIONS_MODEL_ROLE,
-                content: `You are a helpful assistant. Based on the context below, answer this specific query directly: ${question} .You should always aim to be concise, helpful, and friendly in your responses. Do not ask follow-up questions or request more details.`
+                content: OPENAI_CHAT_COMPLETIONS_CONTEXT.replace('{question}', question)
             },
             {
                 role: "user",
@@ -37,8 +44,8 @@ const getAnswerFromContext = async (question, context) => {
                 content: `Question: ${question}`
             }
         ],
-        max_tokens: 200,
-        temperature: 0.3
+        max_tokens: CHAT_COMPLETIONS_MAX_TOKEN,
+        temperature: CHAT_COMPLETIONS_TEMPERATURE
     };
 
     try {

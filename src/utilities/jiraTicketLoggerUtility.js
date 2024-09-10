@@ -5,8 +5,12 @@ require("dotenv").config({
 const axios = require('axios');
 const { JIRA_URL} = require('../config/const');
 
-// Function to log a Jira issue
-async function logJiraIssue(issueData) {
+/**
+ * Utility function to a log a Jira issue
+ * @param issueData required info {issueSummary, issueDescription, issueType, loggerEmail, jiraProjectKey}
+ * @returns id of the the logged issue
+ */
+const logJiraIssue = async (issueData) => {
     let { issueSummary, issueDescription, issueType, loggerEmail, jiraProjectKey } = issueData;
     // Create the payload for the issue
     const issue = {

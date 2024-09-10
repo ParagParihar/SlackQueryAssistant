@@ -1,7 +1,12 @@
 const { QUERY_SIMILARITY_ACCPETANCE_THRESHOLD } = require('../config/const.js');
 const { fetchCompleteKnowledgeBaseEmbeddings, getKnowledgeBaseDataById } = require('../database/knowledgeBaseDb.js');
 
-// Utility to calculate cosine similarity
+/**
+ * Utility function to perform cosine similarity
+ * @param vecA vector A of datapoints
+ * @param {*} vecB vector B of datapoints
+ * @returns cosine similarity value
+ */
 const performCosineSimilarity = (vecA, vecB) => {
     const dotProduct = vecA.reduce((acc, val, i) => acc + val * vecB[i], 0);
     const magnitudeA = Math.sqrt(vecA.reduce((acc, val) => acc + val * val, 0));
@@ -9,6 +14,11 @@ const performCosineSimilarity = (vecA, vecB) => {
     return dotProduct / (magnitudeA * magnitudeB);
 }
 
+/**
+ * Utility fucntion to search the query in the knowledgebase
+ * @param queryEmbedding to be searched in db for match
+ * @returns return { isPresent, data } if the data is matched
+ */
 const isSearchQueryPresentInKnowledgeBase = async (queryEmbedding) => {
     let retVal = { isPresent: false, data: null };
     if(!queryEmbedding) {
