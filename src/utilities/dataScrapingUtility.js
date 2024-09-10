@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 const { SCRAPING_SECTION_URL_DIV_ID,
     SCRAPING_ARTICLE_URL_DIV_ID,
     SCRAPING_TITLE_DIV,
@@ -154,9 +155,23 @@ const scrapeArticlePage = async (url) => {
 const getArticleUrls = async (url) => {
     let articleUrls = [];
 
-    try {
-        const { data } = await axios.get(url);
-        const $ = cheerio.load(data);
+    // launch a headless browser with puppeteer, this will allow us with button clicks
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+
+    await page.goto(url);
+
+    // few sections has paginated data, we will click on next button and fetch the remaining articles aswell
+    // fetch the remaining articles aswell until the button is disabled
+    let nextButtonExists = false;
+
+    do {
+        // load the section url page using puppeteer
+        await page.waitForSelector(`${SCRAPING_ARTICLE_URL_DIV_ID} a`);
+        const content = await page.content();
+
+        // now use cheerio to fetch the links
+        const $ = cheerio.load(content);
 
         // Scrape article links from the current page
         $(`${SCRAPING_ARTICLE_URL_DIV_ID} a`).each((i, element) => {
@@ -170,10 +185,21 @@ const getArticleUrls = async (url) => {
             }
         });
 
-    } catch (error) {
-        console.error('Error scraping article urls:', error);
-    }
+        // Check if the "Next" button is available and not disabled
+        nextButtonExists = await page.evaluate(() => {
+            const nextButton = document.querySelector('button[title="next"]');
+            return nextButton && !nextButton.disabled;
+        });
 
+        if (!nextButtonExists) {
+            break; 
+        }
+
+        await page.click('button[title="next"]');
+    } 
+    while (nextButtonExists);
+
+    await browser.close();
     return articleUrls;
 };
 
