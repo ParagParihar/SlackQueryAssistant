@@ -3,10 +3,32 @@
 This project is a Slack bot that interacts with users by answering their queries based on a knowledge base. The bot uses embeddings and cosine similarity to find the best match for user queries and provides contextual answers using OpenAI's Chat Completions API. Additionally, it logs Jira tickets for unresolved queries and provides the link to the user.
 
 ## Features<br>
-* Slack bot for query handling.<br>
-* Integration with OpenAI's Chat Completions API for contextual answers.<br>
-* Knowledge base with embeddings for efficient query matching.<br>
-* Jira ticket logging for unresolved queries.<br>
+* Web Scraping: The bot scrapes articles from a specified URL, extracts relevant data, and stores it in a database. The scraped data is used to generate embeddings and build the knowledge base for query matching.<br><br>
+* Query Handling: The bot responds to user queries posted in a Slack channel.<br><br>
+* Embedding Search: The bot uses cosine similarity on pre-generated embeddings to find the best match from the knowledge base for the user's query.<br><br>
+* Contextual Responses: After matching, the bot uses OpenAI's Chat Completions API to generate a contextual response to the query.<br><br>
+* Jira Ticket Logging: If the query cannot be resolved, the bot creates a Jira ticket and shares the ticket link with the user.<br><br>
+
+## Workflow<br>
+* Scraping and Data Storage:
+
+  * The bot scrapes data from predefined URLs.
+  * Extracted data is stored in a SQLite database (knowledgeBaseDb.db) for future use.
+  * Embeddings are generated for each article using OpenAI's API and stored in the database.
+
+* Query Matching:
+
+  * When a user posts a query in the Slack channel, the bot compares the query's embeddings with the knowledge base using cosine similarity.
+  * The closest match is retrieved, and a response is generated based on the content.
+
+* Contextual Response:
+
+  * The bot then utilizes OpenAI's Chat Completions API to craft a precise, user-friendly response based on the matched article and the user's query.
+
+* Jira Ticket Logging:
+
+  * If no relevant match is found in the knowledge base, the bot automatically creates a Jira bug ticket and shares the link with the user.
+
 
 ## Installation<br>
 Clone the repository:<br>
