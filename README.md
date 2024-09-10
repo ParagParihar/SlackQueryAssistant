@@ -38,6 +38,7 @@ cd your-repo-name
 ```
 
 Install dependencies:<br>
+* Please make sure you have installed Node version v18.15.0 <br> 
 ```sh
 npm install
 ```
