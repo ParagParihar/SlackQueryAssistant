@@ -4,7 +4,7 @@ require("dotenv").config({
 });
 const express = require('express');
 const bodyParser = require('body-parser');
-const { fetchCompleteKnowledgeBase, storeKnowledgeBaseEmbeddingsDataInDB } = require('../../database/knowledgeBaseDb.js');
+const { fetchCompleteKnowledgeBase, storeKnowledgeBaseEmbeddingsDataInDB } = require('../../database/knowledgeBaseWrapper.js');
 const { getEmbeddings } = require('../../utilities/embeddingCallUtility.js');
 const axios = require('axios');
 const getPLimit = async () => (await import('p-limit')).default;

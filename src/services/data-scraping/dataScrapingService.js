@@ -5,7 +5,7 @@ require("dotenv").config({
 });
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const { storeKnowledgeBaseDataInDB } = require('../../database/knowledgeBaseDb.js');
+const { storeKnowledgeBaseDataInDB } = require('../../database/knowledgeBaseWrapper.js');
 const { getSectionUrls, getArticleUrls, scrapeArticlePage } = require('../../utilities/dataScrapingUtility.js');
 const getPLimit = async () => (await import('p-limit')).default;
 
@@ -19,6 +19,8 @@ app.use(bodyParser.json());
  * @returns true if data was scraped and stored in DB successfuly
  */
 const procesAndStoreKnowledgeBaseInDB = async (mainPageUrl) => {
+    console.log(`Scraping ${mainPageUrl} ...`);
+
     const pLimit = await getPLimit();
 	const limit = pLimit(50);  // only sending 50 concurrent calls articles for scraping and storing
 

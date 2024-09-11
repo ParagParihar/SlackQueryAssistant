@@ -1,3 +1,7 @@
+/**
+ * DB file for SQLite db
+ * Please make sure any utility added or changed is reflected in PostgreSQL db file aswell
+ */
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 

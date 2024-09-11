@@ -41,7 +41,7 @@ function startService(servicePath, serviceName, readyMessage) {
     });
 
     // Start the service
-    console.log(`Starting ${serviceName}...`);
+    console.log(`Starting ${serviceName}...\n`);
   });
 }
 

@@ -45,7 +45,7 @@ npm install
 
 Set up environment variables:<br>
 
-Create a .env file in the root directory and add the following environment variables:<br>
+* Create a .env file in the root directory and add the following environment variables:<br>
 ```sh
 BOT_TOKEN=your-slack-bot-token
 SLACK_APP_TOKEN=your-slack-app-token
@@ -60,6 +60,17 @@ MAIN_SERVER_PORT=your-port-1
 SLACK_BOT_SERVICE_PORT=your-port-2
 DATA_SCRAPING_SERVICE_PORT=your-port-3
 EMBEDDING_GENERATION_SERVICE_PORT=your-port-4
+```
+
+* Add these to your env file if you want to use a PostgreSQL database instead of SQlite:<br>
+  * Note - Make sure you have the PostgreSQL database running (Please refer to https://www.postgresql.org/ for more info.)
+```sh
+DB_TYPE=postgresql
+POSTGRESQL_DB_USER=your-db-username
+POSTGRESQL_DB_HOST=your-db-host
+POSTGRESQL_DB_DATABASE=your-db-database
+POSTGRESQL_DB_PASSWORD=your-db-password
+POSTGRESQL_DB_PORT=your-db-port
 ```
 
 ## Usage<br>
