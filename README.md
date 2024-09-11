@@ -63,7 +63,7 @@ EMBEDDING_GENERATION_SERVICE_PORT=your-port-4
 ```
 
 * Add these to your env file if you want to use a PostgreSQL database instead of SQlite:<br>
-  * Note - Make sure you have the PostgreSQL database running (Please refer to https://www.postgresql.org/ for more info.)
+<small>**Note:** Make sure you have the PostgreSQL database running (Please follow the official [documentation](https://www.postgresql.org/) for more info).</small>
 ```sh
 DB_TYPE=postgresql
 POSTGRESQL_DB_USER=your-db-username
@@ -74,7 +74,7 @@ POSTGRESQL_DB_PORT=your-db-port
 ```
 
 ## Usage<br>
-Start all the services:<br>
+To run this service, you will have to first start all the services, following which we can run the main server.<br>
 
 To start all services, run:<br>
 ```sh
@@ -86,12 +86,12 @@ Scraping Service<br>
 Embedding Generation Service<br>
 Slack Bot Service<br>
 <br>
-To start the main server<br>
+To start the main server, open a new terminal window,<br>
 ```sh
 npm run begin
 ```
 This will start:<br>
-Main Server<br>
+Main Server - Orchestrates between all the services and starts the scraping, followed by generating the embeddings and then storing into the database.<br>
 <br>
 Running individual services:<br>
 If you need to start individual services separately, use the following commands:<br>
