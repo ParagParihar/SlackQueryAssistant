@@ -5,9 +5,9 @@ require("dotenv").config({
 });
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const { storeKnowledgeBaseDataInDB } = require('../../database/knowledgeBaseWrapper.js');
+const { storeKnowledgeBaseDataInDB } = require('../../database/services/dbServices.js');
 const { getSectionUrls, getArticleUrls, scrapeArticlePage } = require('../../utilities/dataScrapingUtility.js');
-const getPLimit = async () => (await import('p-limit')).default;
+const Bluebird = require('bluebird'); 
 
 const app = express();
 
@@ -21,36 +21,25 @@ app.use(bodyParser.json());
 const procesAndStoreKnowledgeBaseInDB = async (mainPageUrl) => {
     console.log(`Scraping ${mainPageUrl} ...`);
 
-    const pLimit = await getPLimit();
-	const limit = pLimit(50);  // only sending 50 concurrent calls articles for scraping and storing
+    let urlsWithFailureVec = [];
 
-
-    let urlsWithFailureVec = [];    // not doing anything with this rn
-
+    // Get section URLs
     let sectionUrls = await getSectionUrls(mainPageUrl);
 
-    // Process each section asynchronously
-    const sectionPromises = sectionUrls.map(async (sectionUrl) => {
+    // Process each section URL asynchronously
+    await Bluebird.map(sectionUrls, async (sectionUrl) => {
         const articleUrls = await getArticleUrls(sectionUrl);
 
-        // Process each article asynchronously
-        const articlePromises = articleUrls.map(async (articleUrl) => {
-            return limit(async () => { 
-                const articleData = await scrapeArticlePage(articleUrl);
+        // Process each article URL asynchronously
+        await Bluebird.map(articleUrls, async (articleUrl) => {
+            const articleData = await scrapeArticlePage(articleUrl);
+            let ret = await storeKnowledgeBaseDataInDB(articleData);
 
-                let ret = await storeKnowledgeBaseDataInDB(articleData);
-                if (!ret) {
-                    urlsWithFailureVec.push(articleUrl);
-                }
-            });
-        });
-
-        // Wait for all article scrapes in this section to complete
-        await Promise.all(articlePromises);
-    });
-
-    // Wait for all section scrapes to complete
-    await Promise.all(sectionPromises);
+            if (!ret) {
+                urlsWithFailureVec.push(articleUrl); // Handle failed URLs
+            }
+        }, { concurrency: 50 });
+    }, { concurrency: 50 });
 
     return true;
 };

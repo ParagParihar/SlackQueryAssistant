@@ -1,11 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
-const { SCRAPING_SECTION_URL_DIV_ID,
-    SCRAPING_ARTICLE_URL_DIV_ID,
-    SCRAPING_TITLE_DIV,
-    SCRAPING_ARTICLES_DETAILS_DIV_ID,
-    SCRAPING_ARTICLE_CONTENT_DIV_ID } = require('../config/const');
+const Constants = require('../config/const');
 
 /**
  * Function to parse the element node and return the text content present inside node
@@ -120,11 +116,11 @@ const scrapeArticlePage = async (url) => {
     try {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
-        const articleWrapper = $(SCRAPING_ARTICLE_CONTENT_DIV_ID);
+        const articleWrapper = $(Constants.SCRAPING_ARTICLE_CONTENT_DIV_ID);
 
-        let title = processArticleTitle($, SCRAPING_TITLE_DIV);
+        let title = processArticleTitle($, Constants.SCRAPING_TITLE_DIV);
 
-        let { author, lastUpdated } = processArticleDetails($, SCRAPING_ARTICLES_DETAILS_DIV_ID);
+        let { author, lastUpdated } = processArticleDetails($, Constants.SCRAPING_ARTICLES_DETAILS_DIV_ID);
 
         let content = [];
         articleWrapper.children().each((_, element) => {
@@ -155,51 +151,55 @@ const scrapeArticlePage = async (url) => {
 const getArticleUrls = async (url) => {
     let articleUrls = [];
 
-    // launch a headless browser with puppeteer, this will allow us with button clicks
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
+    try {
+        // launch a headless browser with puppeteer, this will allow us with button clicks
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
 
-    await page.goto(url);
+        await page.goto(url);
 
-    // few sections has paginated data, we will click on next button and fetch the remaining articles aswell
-    // fetch the remaining articles aswell until the button is disabled
-    let nextButtonExists = false;
+        // few sections has paginated data, we will click on next button and fetch the remaining articles aswell
+        // fetch the remaining articles aswell until the button is disabled
+        let nextButtonExists = false;
 
-    do {
-        // load the section url page using puppeteer
-        await page.waitForSelector(`${SCRAPING_ARTICLE_URL_DIV_ID} a`);
-        const content = await page.content();
+        do {
+            // load the section url page using puppeteer
+            await page.waitForSelector(`${Constants.SCRAPING_ARTICLE_URL_DIV_ID} a`);
+            const content = await page.content();
 
-        // now use cheerio to fetch the links
-        const $ = cheerio.load(content);
+            // now use cheerio to fetch the links
+            const $ = cheerio.load(content);
 
-        // Scrape article links from the current page
-        $(`${SCRAPING_ARTICLE_URL_DIV_ID} a`).each((i, element) => {
-            let articleUrl = $(element).attr('href');
-            if (articleUrl) {
-                // If URLs are relative, convert them to absolute
-                if (!articleUrl.startsWith('http')) {
-                    articleUrl = new URL(articleUrl, url).href;
+            // Scrape article links from the current page
+            $(`${Constants.SCRAPING_ARTICLE_URL_DIV_ID} a`).each((i, element) => {
+                let articleUrl = $(element).attr('href');
+                if (articleUrl) {
+                    // If URLs are relative, convert them to absolute
+                    if (!articleUrl.startsWith('http')) {
+                        articleUrl = new URL(articleUrl, url).href;
+                    }
+                    articleUrls.push(articleUrl);
                 }
-                articleUrls.push(articleUrl);
+            });
+
+            // Check if the "Next" button is available and not disabled
+            nextButtonExists = await page.evaluate(() => {
+                const nextButton = document.querySelector('button[title="next"]');
+                return nextButton && !nextButton.disabled;
+            });
+
+            if (!nextButtonExists) {
+                break;
             }
-        });
 
-        // Check if the "Next" button is available and not disabled
-        nextButtonExists = await page.evaluate(() => {
-            const nextButton = document.querySelector('button[title="next"]');
-            return nextButton && !nextButton.disabled;
-        });
-
-        if (!nextButtonExists) {
-            break; 
+            await page.click('button[title="next"]');
         }
+        while (nextButtonExists);
 
-        await page.click('button[title="next"]');
-    } 
-    while (nextButtonExists);
-
-    await browser.close();
+        await browser.close();
+    } catch (error) {
+        console.log("Error during fetching article urls from url: ", url, ' with error ', error);
+    }
     return articleUrls;
 };
 
@@ -216,7 +216,7 @@ const getSectionUrls = async (mainPageUrl) => {
         const $ = cheerio.load(data);
 
         // Extract URLs from the div having section urls
-        $(`${SCRAPING_SECTION_URL_DIV_ID} a`).each((i, element) => {
+        $(`${Constants.SCRAPING_SECTION_URL_DIV_ID} a`).each((i, element) => {
             let sectionUrl = $(element).attr('href');
             if (sectionUrl) {
 

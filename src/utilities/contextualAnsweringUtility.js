@@ -3,12 +3,7 @@ require("dotenv").config({
     path: path.resolve(__dirname, '../../.env')
 });
 const axios = require('axios');
-const { OPENAI_CHAT_COMPLETIONS_API,
-    OPENAI_CHAT_COMPLETIONS_MODEL,
-    OPENAI_CHAT_COMPLETIONS_MODEL_ROLE,
-    OPENAI_CHAT_COMPLETIONS_CONTEXT,
-    CHAT_COMPLETIONS_MAX_TOKEN,
-    CHAT_COMPLETIONS_TEMPERATURE } = require("../config/const");
+const Constants = require("../config/const");
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
@@ -19,7 +14,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
  * @returns the answer based on contect
  */
 const getAnswerFromContext = async (question, context) => {
-    const url = OPENAI_CHAT_COMPLETIONS_API;
+    const url = Constants.OPENAI_CHAT_COMPLETIONS_API;
 
     // Setup headers
     const headers = {
@@ -29,11 +24,11 @@ const getAnswerFromContext = async (question, context) => {
 
     // Setup the request body data for chat completion
     const data = {
-        model: OPENAI_CHAT_COMPLETIONS_MODEL,
+        model: Constants.OPENAI_CHAT_COMPLETIONS_MODEL,
         messages: [
             {
-                role: OPENAI_CHAT_COMPLETIONS_MODEL_ROLE,
-                content: OPENAI_CHAT_COMPLETIONS_CONTEXT.replace('{question}', question)
+                role: Constants.OPENAI_CHAT_COMPLETIONS_MODEL_ROLE,
+                content: Constants.OPENAI_CHAT_COMPLETIONS_CONTEXT.replace('{question}', question)
             },
             {
                 role: "user",
@@ -44,8 +39,8 @@ const getAnswerFromContext = async (question, context) => {
                 content: `Question: ${question}`
             }
         ],
-        max_tokens: CHAT_COMPLETIONS_MAX_TOKEN,
-        temperature: CHAT_COMPLETIONS_TEMPERATURE
+        max_tokens: Constants.CHAT_COMPLETIONS_MAX_TOKEN,
+        temperature: Constants.CHAT_COMPLETIONS_TEMPERATURE
     };
 
     try {

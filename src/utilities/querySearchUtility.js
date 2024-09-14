@@ -1,5 +1,5 @@
-const { QUERY_SIMILARITY_ACCPETANCE_THRESHOLD } = require('../config/const.js');
-const { fetchCompleteKnowledgeBaseEmbeddings, getKnowledgeBaseDataById } = require('../database/knowledgeBaseWrapper.js');
+const Constants = require('../config/const.js');
+const { fetchCompleteKnowledgeBaseEmbeddings, getKnowledgeBaseDataById } = require('../database/services/dbServices.js');
 
 /**
  * Utility function to perform cosine similarity
@@ -66,7 +66,7 @@ const isSearchQueryPresentInKnowledgeBase = async (queryEmbedding) => {
 
     // check if the similarity is more than defined threshold, if yes, return the data, else not
     if (closestDataToSearchQuery &&
-        closestDataToSearchQuery.similarity >= QUERY_SIMILARITY_ACCPETANCE_THRESHOLD &&
+        closestDataToSearchQuery.similarity >= Constants.QUERY_SIMILARITY_ACCPETANCE_THRESHOLD &&
         closestDataToSearchQuery.data
     ) {
         retVal = { isPresent: true, data: closestDataToSearchQuery.data }

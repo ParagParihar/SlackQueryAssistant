@@ -5,6 +5,8 @@ require("dotenv").config({
 const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const { stopService } = require('../utilities/processManagerUtility');
+const Constants = require('../config/const');
 
 const app = express();
 app.use(bodyParser.json());
@@ -32,6 +34,9 @@ app.post('/notify/scraping-complete', async (req, res) => {
         console.log('Embedding service started.');
     }
 
+    // stop the service as not needed anymore
+    await stopService(Constants.SCRAPING_SERVICE_NAME);
+
     res.status(200).send('Scraping acknowledged by main server.');
 });
 
@@ -45,6 +50,9 @@ app.post('/notify/embedding-generation-complete', async (req, res) => {
         axios.post(`http://localhost:${process.env.SLACK_BOT_SERVICE_PORT}/notify`);
         console.log('Slack bot service notified.');
     }
+
+    // stop the service as not needed anymore
+    await stopService(Constants.EMBEDDING_SERVICE_NAME);
 
     res.status(200).send('Embedding acknowledged by main server.');
 });

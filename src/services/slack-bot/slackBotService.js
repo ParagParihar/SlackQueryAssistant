@@ -9,7 +9,7 @@ const { getAnswerFromContext } = require('../../utilities/contextualAnsweringUti
 const { logJiraIssue } = require('../../utilities/jiraTicketLoggerUtility.js');
 const { isSearchQueryPresentInKnowledgeBase } = require('../../utilities/querySearchUtility.js');
 const { App } = require('@slack/bolt');
-const { SLACK_PREAMBLE_TEMPLATE, SLACK_POSTAMBLE_TEMPLATE, JIRA_TICKET_TEMPLATE } = require('../../config/const.js');
+const Constants = require('../../config/const.js');
 
 const app = express();
 
@@ -66,14 +66,14 @@ const processMessageQueue = async () => {
                 if (retVal.isPresent && retVal.data) {
                     let ret = await getAnswerFromContext(retVal.data.content);
 
-                    let reply = SLACK_PREAMBLE_TEMPLATE.replace('{name}', userName) + ret;
+                    let reply = Constants.SLACK_PREAMBLE_TEMPLATE.replace('{name}', userName) + ret;
 
                     /**
                      * We dont want to create a to-n-fro conversational chat with user. 
                      * The bot should act as first line of help for the user, so that user gets a high level idea of the solution
                      * and further can go to the link and check further.
                      */
-                    reply += SLACK_POSTAMBLE_TEMPLATE.replace('{url}', retVal.data.url);
+                    reply += Constants.SLACK_POSTAMBLE_TEMPLATE.replace('{url}', retVal.data.url);
 
                     await slackApp.client.chat.postMessage({
                         channel: channel,
@@ -91,7 +91,7 @@ const processMessageQueue = async () => {
                     const jiraIssue = await logJiraIssue(issueData);
                     await slackApp.client.chat.postMessage({
                         channel: channel,
-                        text: JIRA_TICKET_TEMPLATE.replace('{name}', userName).replace('{ticketKey}', jiraIssue.issueLink),
+                        text: Constants.JIRA_TICKET_TEMPLATE.replace('{name}', userName).replace('{ticketKey}', jiraIssue.issueLink),
                         thread_ts: ts
                     });
                 }
