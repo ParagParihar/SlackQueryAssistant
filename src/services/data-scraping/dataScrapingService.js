@@ -5,7 +5,7 @@ require("dotenv").config({
 });
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const { storeKnowledgeBaseDataInDB } = require('../../database/knowledgeBaseWrapper.js');
+const { storeKnowledgeBaseDataInDB } = require('../../database/services/dbServices.js');
 const { getSectionUrls, getArticleUrls, scrapeArticlePage } = require('../../utilities/dataScrapingUtility.js');
 const getPLimit = async () => (await import('p-limit')).default;
 

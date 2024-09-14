@@ -12,4 +12,4 @@ node_modules/
 Thumbs.db
 
 # Database files
-src/database/knowledgeBaseDb.db
+src/database/db

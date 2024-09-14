@@ -1,5 +1,5 @@
 const { QUERY_SIMILARITY_ACCPETANCE_THRESHOLD } = require('../config/const.js');
-const { fetchCompleteKnowledgeBaseEmbeddings, getKnowledgeBaseDataById } = require('../database/knowledgeBaseWrapper.js');
+const { fetchCompleteKnowledgeBaseEmbeddings, getKnowledgeBaseDataById } = require('../database/services/dbServices.js');
 
 /**
  * Utility function to perform cosine similarity
