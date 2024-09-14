@@ -1,11 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
-const { SCRAPING_SECTION_URL_DIV_ID,
-    SCRAPING_ARTICLE_URL_DIV_ID,
-    SCRAPING_TITLE_DIV,
-    SCRAPING_ARTICLES_DETAILS_DIV_ID,
-    SCRAPING_ARTICLE_CONTENT_DIV_ID } = require('../config/const');
+const Constants = require('../config/const');
 
 /**
  * Function to parse the element node and return the text content present inside node
@@ -120,11 +116,11 @@ const scrapeArticlePage = async (url) => {
     try {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
-        const articleWrapper = $(SCRAPING_ARTICLE_CONTENT_DIV_ID);
+        const articleWrapper = $(Constants.SCRAPING_ARTICLE_CONTENT_DIV_ID);
 
-        let title = processArticleTitle($, SCRAPING_TITLE_DIV);
+        let title = processArticleTitle($, Constants.SCRAPING_TITLE_DIV);
 
-        let { author, lastUpdated } = processArticleDetails($, SCRAPING_ARTICLES_DETAILS_DIV_ID);
+        let { author, lastUpdated } = processArticleDetails($, Constants.SCRAPING_ARTICLES_DETAILS_DIV_ID);
 
         let content = [];
         articleWrapper.children().each((_, element) => {
@@ -168,14 +164,14 @@ const getArticleUrls = async (url) => {
 
         do {
             // load the section url page using puppeteer
-            await page.waitForSelector(`${SCRAPING_ARTICLE_URL_DIV_ID} a`);
+            await page.waitForSelector(`${Constants.SCRAPING_ARTICLE_URL_DIV_ID} a`);
             const content = await page.content();
 
             // now use cheerio to fetch the links
             const $ = cheerio.load(content);
 
             // Scrape article links from the current page
-            $(`${SCRAPING_ARTICLE_URL_DIV_ID} a`).each((i, element) => {
+            $(`${Constants.SCRAPING_ARTICLE_URL_DIV_ID} a`).each((i, element) => {
                 let articleUrl = $(element).attr('href');
                 if (articleUrl) {
                     // If URLs are relative, convert them to absolute
@@ -220,7 +216,7 @@ const getSectionUrls = async (mainPageUrl) => {
         const $ = cheerio.load(data);
 
         // Extract URLs from the div having section urls
-        $(`${SCRAPING_SECTION_URL_DIV_ID} a`).each((i, element) => {
+        $(`${Constants.SCRAPING_SECTION_URL_DIV_ID} a`).each((i, element) => {
             let sectionUrl = $(element).attr('href');
             if (sectionUrl) {
 

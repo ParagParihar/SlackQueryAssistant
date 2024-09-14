@@ -13,3 +13,6 @@ Thumbs.db
 
 # Database files
 src/database/db
+
+# Log files
+src/logs

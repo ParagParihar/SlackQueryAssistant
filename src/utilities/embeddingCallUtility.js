@@ -3,7 +3,7 @@ require("dotenv").config({
     path: path.resolve(__dirname, '../../.env')
 });
 const axios = require('axios');
-const { OPENAI_EMBEDDINGS_API, OPENAI_EMBEDDINGS_MODEL, MAX_RETRIES, REQUEST_TIMEOUT } = require("../config/const");
+const Constants = require("../config/const");
 
 /**
  * Utility function to fetch embeddings of the data passed
@@ -11,18 +11,18 @@ const { OPENAI_EMBEDDINGS_API, OPENAI_EMBEDDINGS_MODEL, MAX_RETRIES, REQUEST_TIM
  * @param {*} retries no of retries if call fails
  * @returns the embeddings of data passed
  */
-const getEmbeddings = async (data, retries = MAX_RETRIES) => {
+const getEmbeddings = async (data, retries = Constants.MAX_RETRIES) => {
     try {
-        const response = await axios.post(OPENAI_EMBEDDINGS_API,
+        const response = await axios.post(Constants.OPENAI_EMBEDDINGS_API,
             {
                 input: data,
-                model: OPENAI_EMBEDDINGS_MODEL
+                model: Constants.OPENAI_EMBEDDINGS_MODEL
             },
             {
                 headers: {
                     'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
                 },
-                timeout: REQUEST_TIMEOUT
+                timeout: Constants.REQUEST_TIMEOUT
             });
 
         return response?.data?.data[0]?.embedding;

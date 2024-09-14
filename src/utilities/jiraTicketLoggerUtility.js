@@ -3,7 +3,7 @@ require("dotenv").config({
     path: path.resolve(__dirname, '../../.env')
 });
 const axios = require('axios');
-const { JIRA_URL} = require('../config/const');
+const Constants = require('../config/const');
 
 /**
  * Utility function to a log a Jira issue
@@ -28,7 +28,7 @@ const logJiraIssue = async (issueData) => {
 
     try {
         // Make HTTP request to Jira API
-        const response = await axios.post(JIRA_URL, issue, {
+        const response = await axios.post(Constants.JIRA_URL, issue, {
             headers: {
                 'Authorization': `Basic ${Buffer.from(`${loggerEmail}:${process.env.JIRA_API_TOKEN}`).toString('base64')}`,
                 'Content-Type': 'application/json',
